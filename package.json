@@ -17,6 +17,7 @@
     "@tanstack/react-query-devtools": "^5.81.2",
     "@types/react-router-dom": "^5.3.3",
     "clsx": "^2.1.1",
+    "moment-jalaali": "^0.10.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@types/moment-jalaali": "^0.7.9",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.2",

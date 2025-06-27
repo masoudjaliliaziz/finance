@@ -1,3 +1,4 @@
+import moment from "moment-jalaali";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -54,6 +55,11 @@ const MonthlySummaryByTitle = () => {
 
     fetchSummary();
   }, []);
+  moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
+  // تابع کمکی برای تبدیل تاریخ میلادی به شمسی همراه با روز هفته
+  const formatJalaliDate = (gregorianDate: string) => {
+    return moment(gregorianDate, "YYYY-MM-DD").format("  dddd jD jMMMM");
+  };
 
   return (
     <div className="bg-base-300 p-4 rounded-xl shadow">
@@ -85,7 +91,7 @@ const MonthlySummaryByTitle = () => {
                     key={j}
                     className="flex justify-between text-accent font-bold text-xs"
                   >
-                    <span>{detail.date.slice(0, 10)}</span>
+                    <span>{formatJalaliDate(detail.date.slice(0, 10))}</span>
                     <span>{detail.amount.toLocaleString()} تومان</span>
                   </li>
                 ))}

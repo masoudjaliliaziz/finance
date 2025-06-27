@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import moment from "moment-jalaali";
+
+moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
 interface Expense {
   id: number;
@@ -103,115 +106,131 @@ const MonthlyGroups = () => {
 
   return (
     <div className="space-y-6 border-2 border-accent rounded bg-base-300 text-base-content">
-      {Object.entries(dataByMonth).map(([month, days]) => (
-        <div key={month} className=" p-4 rounded-xl shadow">
-          <button
-            onClick={() =>
-              setExpandedMonth(expandedMonth === month ? null : month)
-            }
-            className="text-sm font-bold w-full text-left text-accent "
-          >
-            {month}
-          </button>
+      {Object.entries(dataByMonth).map(([month, days]) => {
+        const [year, monthNum] = month.split("-").map(Number);
+        const gregorianDate = `${year}-${String(monthNum).padStart(2, "0")}-01`;
+        const persianMonth = moment(gregorianDate, "YYYY-MM-DD").format(
+          "jMMMM jYYYY"
+        );
 
-          {expandedMonth === month && (
-            <div className="mt-4 space-y-3">
-              {Object.entries(days).map(([day, expenses]) => (
-                <div
-                  key={day}
-                  className="bg-base-200 rounded-lg p-3 border-2 border-accent"
-                >
-                  <button
-                    onClick={() =>
-                      setExpandedDay(expandedDay === day ? null : day)
-                    }
-                    className="font-medium text-right w-full"
-                  >
-                    🗓 {day}
-                  </button>
+        return (
+          <div key={month} className=" p-4 rounded-xl shadow">
+            <button
+              onClick={() =>
+                setExpandedMonth(expandedMonth === month ? null : month)
+              }
+              className="text-sm font-bold w-full text-left text-accent "
+            >
+              {persianMonth}
+            </button>
 
-                  {expandedDay === day && (
-                    <>
-                      <ul className="mt-2 space-y-1 text-sm bg-base-300 font-bold text-base-content p-2 rounded border-2 border-accent">
-                        {expenses.map((item) => (
-                          <li
-                            key={item.id}
-                            className="flex justify-between text-gray-700 items-center gap-2"
-                          >
-                            <span>{item.title}</span>
-                            <span>{item.amount.toLocaleString()} تومان</span>
-                            <div className="flex items-center justify-center gap-1">
-                              <button
-                                className="text-xs text-accent font-semibold cursor-pointer hover:text-accent-content"
-                                onClick={() => handleEdit(item)}
+            {expandedMonth === month && (
+              <div className="mt-4 space-y-3">
+                {Object.entries(days).map(([day, expenses]) => {
+                  const persianDay = moment(day, "YYYY-MM-DD").format(
+                    "dddd jD jMMMM jYYYY"
+                  );
+
+                  return (
+                    <div
+                      key={day}
+                      className="bg-base-200 rounded-lg p-3 border-2 border-accent"
+                    >
+                      <button
+                        onClick={() =>
+                          setExpandedDay(expandedDay === day ? null : day)
+                        }
+                        className="font-medium text-right w-full"
+                      >
+                        {persianDay}
+                      </button>
+
+                      {expandedDay === day && (
+                        <>
+                          <ul className="mt-2 space-y-1 text-sm bg-base-300 font-bold text-base-content p-2 rounded border-2 border-accent">
+                            {expenses.map((item) => (
+                              <li
+                                key={item.id}
+                                className="flex justify-between text-gray-700 items-center gap-2"
                               >
-                                ویرایش
-                              </button>
-                              <button
-                                className="text-xs text-error font-semibold cursor-pointer hover:text-error-content"
-                                onClick={() => handleDelete(item.id)}
-                              >
-                                حذف
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="mt-4 space-y-2">
-                        <input
-                          type="text"
-                          placeholder="عنوان"
-                          className="w-full border rounded px-2 py-1"
-                          value={newExpense.title}
-                          onChange={(e) =>
-                            setNewExpense({
-                              ...newExpense,
-                              title: e.target.value,
-                            })
-                          }
-                        />
-                        <input
-                          type="number"
-                          placeholder="مبلغ"
-                          className="w-full border rounded px-2 py-1"
-                          value={newExpense.amount}
-                          onChange={(e) =>
-                            setNewExpense({
-                              ...newExpense,
-                              amount: e.target.value,
-                            })
-                          }
-                        />
-                        <input
-                          type="text"
-                          placeholder="توضیحات (اختیاری)"
-                          className="w-full border rounded px-2 py-1"
-                          value={newExpense.description}
-                          onChange={(e) =>
-                            setNewExpense({
-                              ...newExpense,
-                              description: e.target.value,
-                            })
-                          }
-                        />
-                        <button
-                          onClick={() => {
-                            setTargetDate(day);
-                            handleAddExpense();
-                          }}
-                          className="bg-blue-600 text-white px-4 py-1 rounded"
-                        >
-                          افزودن خرج
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+                                <span>{item.title}</span>
+                                <span>
+                                  {item.amount.toLocaleString()} تومان
+                                </span>
+                                <div className="flex items-center justify-center gap-1">
+                                  <button
+                                    className="text-xs text-accent font-semibold cursor-pointer hover:text-accent-content"
+                                    onClick={() => handleEdit(item)}
+                                  >
+                                    ویرایش
+                                  </button>
+                                  <button
+                                    className="text-xs text-error font-semibold cursor-pointer hover:text-error-content"
+                                    onClick={() => handleDelete(item.id)}
+                                  >
+                                    حذف
+                                  </button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="mt-4 space-y-2">
+                            <input
+                              type="text"
+                              placeholder="عنوان"
+                              className="w-full border rounded px-2 py-1"
+                              value={newExpense.title}
+                              onChange={(e) =>
+                                setNewExpense({
+                                  ...newExpense,
+                                  title: e.target.value,
+                                })
+                              }
+                            />
+                            <input
+                              type="number"
+                              placeholder="مبلغ"
+                              className="w-full border rounded px-2 py-1"
+                              value={newExpense.amount}
+                              onChange={(e) =>
+                                setNewExpense({
+                                  ...newExpense,
+                                  amount: e.target.value,
+                                })
+                              }
+                            />
+                            <input
+                              type="text"
+                              placeholder="توضیحات (اختیاری)"
+                              className="w-full border rounded px-2 py-1"
+                              value={newExpense.description}
+                              onChange={(e) =>
+                                setNewExpense({
+                                  ...newExpense,
+                                  description: e.target.value,
+                                })
+                              }
+                            />
+                            <button
+                              onClick={() => {
+                                setTargetDate(day);
+                                handleAddExpense();
+                              }}
+                              className="bg-blue-600 text-white px-4 py-1 rounded"
+                            >
+                              افزودن خرج
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

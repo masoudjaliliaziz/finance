@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import moment from "moment-jalaali";
 import {
   BarChart,
   XAxis,
@@ -9,9 +10,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
 
 interface ChartItem {
   date: string;
@@ -23,6 +21,9 @@ function getMonthRange(year: number, month: number) {
   const end = new Date(year, month, 0).toISOString().slice(0, 10);
   return { start, end };
 }
+
+// بارگذاری تنظیمات فارسی و اعداد فارسی
+moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
 const ExpenseChart = () => {
   const [chartData, setChartData] = useState<ChartItem[]>([]);
@@ -72,13 +73,9 @@ const ExpenseChart = () => {
 
   if (loading) return <p>در حال بارگذاری نمودار...</p>;
 
-  const formatToPersianDate = (isoDate: string) => {
-    const obj = new DateObject({
-      date: isoDate,
-      calendar: persian,
-      locale: persian_fa,
-    });
-    return `${obj.day} ${obj.month.name}`;
+  // فرمت تاریخ شمسی با روز هفته و اعداد فارسی
+  const formatToJalaliDate = (isoDate: string) => {
+    return moment(isoDate, "YYYY-MM-DD").format("dddd jD jMMMM");
   };
 
   return (
@@ -97,14 +94,14 @@ const ExpenseChart = () => {
             textAnchor="end"
             interval={0}
             tick={{ fontSize: 10, fontWeight: "bold", fill: "#00d3bb" }}
-            tickFormatter={(value: string) => formatToPersianDate(value)}
+            tickFormatter={(value: string) => formatToJalaliDate(value)}
           />
           <YAxis
             tick={{ fontSize: 12, fontWeight: "bold" }}
             tickFormatter={(value) => value.toLocaleString("fa-IR")}
           />
           <Tooltip
-            labelFormatter={(label) => formatToPersianDate(label)}
+            labelFormatter={(label) => formatToJalaliDate(label)}
             formatter={(value: number) =>
               `${value.toLocaleString("fa-IR")} تومان`
             }
