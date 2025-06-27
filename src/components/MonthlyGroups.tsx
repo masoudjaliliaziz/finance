@@ -121,6 +121,10 @@ const MonthlyGroups = () => {
                   const persianDay = moment(day, "YYYY-MM-DD").format(
                     "dddd jD jMMMM jYYYY"
                   );
+                  const totalAmount = expenses.reduce(
+                    (sum, item) => sum + item.amount,
+                    0
+                  );
 
                   return (
                     <div
@@ -131,9 +135,15 @@ const MonthlyGroups = () => {
                         onClick={() =>
                           setExpandedDay(expandedDay === day ? null : day)
                         }
-                        className="font-medium text-right w-full"
+                        className="font-bold text-sm flex-row-reverse w-full flex justify-between items-center"
                       >
-                        {persianDay}
+                        <span>{persianDay}</span>
+                        <div className="flex gap-1 items-center flex-row-reverse">
+                          <span className="text-sm font-bold text-accent">
+                            {totalAmount.toLocaleString()}
+                          </span>
+                          <span className="text-xs">تومان</span>
+                        </div>
                       </button>
 
                       {expandedDay === day && (
