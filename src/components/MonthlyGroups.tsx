@@ -16,7 +16,7 @@ const MonthlyGroups = () => {
   const [dataByMonth, setDataByMonth] = useState<
     Record<string, Record<string, Expense[]>>
   >({});
-  const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
+
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [newExpense, setNewExpense] = useState({
     title: "",
@@ -24,6 +24,7 @@ const MonthlyGroups = () => {
     description: "",
   });
   const [targetDate, setTargetDate] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   const fetchData = async () => {
     const { data, error } = await supabase
@@ -61,6 +62,8 @@ const MonthlyGroups = () => {
     const { title, amount, description } = newExpense;
     if (!title || !amount) return alert("لطفاً عنوان و مبلغ را وارد کنید");
 
+    setIsAdding(true);
+
     const { error } = await supabase.from("expenses").insert([
       {
         title,
@@ -69,6 +72,8 @@ const MonthlyGroups = () => {
         date: targetDate,
       },
     ]);
+
+    setIsAdding(false);
 
     if (error) {
       console.error("خطا در افزودن خرج", error);
@@ -105,28 +110,14 @@ const MonthlyGroups = () => {
   };
 
   return (
-    <div className="space-y-6 border-2 border-accent rounded bg-base-300 text-base-content">
+    <div className="space-y-6  rounded bg-base-300 text-base-content">
       {Object.entries(dataByMonth).map(([month, days]) => {
-        const [year, monthNum] = month.split("-").map(Number);
-        const gregorianDate = `${year}-${String(monthNum).padStart(2, "0")}-01`;
-        const persianMonth = moment(gregorianDate, "YYYY-MM-DD").format(
-          "jMMMM jYYYY"
-        );
-
         return (
-          <div key={month} className=" p-4 rounded-xl shadow">
-            <button
-              onClick={() =>
-                setExpandedMonth(expandedMonth === month ? null : month)
-              }
-              className="text-sm font-bold w-full text-left text-accent "
-            >
-              {persianMonth}
-            </button>
-
-            {expandedMonth === month && (
-              <div className="mt-4 space-y-3">
-                {Object.entries(days).map(([day, expenses]) => {
+          <div key={month} className="  rounded-xl shadow bg-base-100">
+            <div className="mt-4 space-y-3">
+              {Object.entries(days)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .map(([day, expenses]) => {
                   const persianDay = moment(day, "YYYY-MM-DD").format(
                     "dddd jD jMMMM jYYYY"
                   );
@@ -178,7 +169,7 @@ const MonthlyGroups = () => {
                             <input
                               type="text"
                               placeholder="عنوان"
-                              className="w-full border rounded px-2 py-1"
+                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
                               value={newExpense.title}
                               onChange={(e) =>
                                 setNewExpense({
@@ -190,7 +181,7 @@ const MonthlyGroups = () => {
                             <input
                               type="number"
                               placeholder="مبلغ"
-                              className="w-full border rounded px-2 py-1"
+                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
                               value={newExpense.amount}
                               onChange={(e) =>
                                 setNewExpense({
@@ -202,7 +193,7 @@ const MonthlyGroups = () => {
                             <input
                               type="text"
                               placeholder="توضیحات (اختیاری)"
-                              className="w-full border rounded px-2 py-1"
+                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
                               value={newExpense.description}
                               onChange={(e) =>
                                 setNewExpense({
@@ -216,9 +207,10 @@ const MonthlyGroups = () => {
                                 setTargetDate(day);
                                 handleAddExpense();
                               }}
-                              className="bg-blue-600 text-white px-4 py-1 rounded"
+                              className="bg-accent text-white px-4 py-1 rounded"
+                              disabled={isAdding}
                             >
-                              افزودن خرج
+                              {isAdding ? "در حال افزودن..." : "افزودن"}
                             </button>
                           </div>
                         </>
@@ -226,8 +218,7 @@ const MonthlyGroups = () => {
                     </div>
                   );
                 })}
-              </div>
-            )}
+            </div>
           </div>
         );
       })}
