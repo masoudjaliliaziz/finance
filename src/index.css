@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@font-face {
+  font-family: "Vazir";
+  src: url("./assets/fonts/Vazirmatn-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+body {
+  font-family: "Vazir", sans-serif;
+}
