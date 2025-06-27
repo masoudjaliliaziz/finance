@@ -1,17 +1,10 @@
 import { supabase } from "../lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
-import moment from "moment-jalaali";
-
-moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
 interface SalarySummaryProps {
   year: number;
   month: number;
 }
-
-const formatJalaliDate = (gregorianDate: string) => {
-  return moment(gregorianDate, "YYYY-MM-DD").format("  jMMMM jYYYY");
-};
 
 const SalarySummary = ({ year, month }: SalarySummaryProps) => {
   const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
@@ -66,13 +59,12 @@ const SalarySummary = ({ year, month }: SalarySummaryProps) => {
   const remaining = (salary || 0) - (expenses || 0);
 
   // تبدیل تاریخ شروع ماه میلادی به شمسی با روز هفته
-  const persianDateString = formatJalaliDate(startDate);
 
   return (
     <div className="my-4 p-4 rounded shadow bg-base-300 border-2 border-accent flex flex-col items-end">
       <div className="w-full flex flex-row-reverse justify-between items-center">
         <h3 className="text-lg font-semibold mb-2">جمع حقوق ماه</h3>
-        <p className="text-sm font-bold">{persianDateString}</p>
+        <p className="text-sm font-bold"></p>
       </div>
       <div className="flex gap-2 justify-start flex-row-reverse items-center w-full">
         <p className="font-black text-accent">
