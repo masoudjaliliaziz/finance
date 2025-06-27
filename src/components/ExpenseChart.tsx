@@ -7,7 +7,11 @@ import {
   Tooltip,
   Bar,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 
 interface ChartItem {
   date: string;
@@ -68,15 +72,47 @@ const ExpenseChart = () => {
 
   if (loading) return <p>در حال بارگذاری نمودار...</p>;
 
+  const formatToPersianDate = (isoDate: string) => {
+    const obj = new DateObject({
+      date: isoDate,
+      calendar: persian,
+      locale: persian_fa,
+    });
+    return `${obj.day} ${obj.month.name}`;
+  };
+
   return (
-    <div className="w-full h-64 bg-base-300 text-accent text-end rounded-xl shadow p-4">
-      <h3 className="text-sm font-bold mb-2">نمودار مخارج این ماه</h3>
+    <div className="w-full h-100 bg-base-300 text-accent text-end rounded-xl shadow p-4">
+      <h3 className="text-sm font-bold mb-2 text-accent">
+        نمودار مخارج این ماه
+      </h3>
       <ResponsiveContainer width="100%" height="90%">
-        <BarChart data={chartData}>
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="total" fill="#00d3bb" />
+        <BarChart
+          data={chartData}
+          margin={{ top: 10, right: 20, bottom: 60, left: 0 }}
+        >
+          <XAxis
+            dataKey="date"
+            angle={-45}
+            textAnchor="end"
+            interval={0}
+            tick={{ fontSize: 10, fontWeight: "bold", fill: "#00d3bb" }}
+            tickFormatter={(value: string) => formatToPersianDate(value)}
+          />
+          <YAxis
+            tick={{ fontSize: 12, fontWeight: "bold" }}
+            tickFormatter={(value) => value.toLocaleString("fa-IR")}
+          />
+          <Tooltip
+            labelFormatter={(label) => formatToPersianDate(label)}
+            formatter={(value: number) =>
+              `${value.toLocaleString("fa-IR")} تومان`
+            }
+          />
+          <Legend
+            wrapperStyle={{ paddingTop: 30, fontSize: 10, fontWeight: "bold" }}
+          />
+          <Bar dataKey="total" fill="#00d3bb" name={"جمع کل مخارج این ماه"} />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -62,15 +62,21 @@ const MonthlySummaryByTitle = () => {
       </h3>
       <ul className="space-y-2">
         {summary.map((item, i) => (
-          <li key={i} className="border-accent border-2 rounded-lg p-3">
+          <li
+            key={i}
+            className="border-accent border-2 rounded-lg p-3 font-black text-base-content text-sm"
+          >
             <button
               onClick={() =>
                 setExpanded(expanded === item.title ? null : item.title)
               }
-              className="flex justify-between w-full text-right font-medium"
+              className="flex justify-between w-full text-right "
             >
+              <div className="flex justify-center items-center flex-row-reverse gap-1">
+                <span>{item.total.toLocaleString()} </span>
+                <span className="text-xs text-accent">تومان</span>
+              </div>
               <span>{item.title}</span>
-              <span>{item.total.toLocaleString()} تومان</span>
             </button>
             {expanded === item.title && details[item.title] && (
               <ul className="mt-2 text-sm space-y-1">

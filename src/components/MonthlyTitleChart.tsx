@@ -1,4 +1,3 @@
-// فایل: src/components/MonthlyTitleChart.tsx
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -9,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
 
 interface TitleChartItem {
@@ -61,15 +61,29 @@ const MonthlyTitleChart = () => {
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
           data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 10, right: 30, left: 0, bottom: 40 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="title" />
-          <YAxis />
-          <Tooltip
-            formatter={(value: number) => `${value.toLocaleString()} تومان`}
+          <XAxis
+            dataKey="title"
+            interval={0}
+            angle={-90}
+            textAnchor="end"
+            tick={{ fontSize: 12, fontWeight: "bold", fill: "#00d3bb" }}
           />
-          <Bar dataKey="total" fill="#00d3bb" />
+          <YAxis
+            tick={{ fontSize: 12, fontWeight: "bold" }}
+            tickFormatter={(value) => value.toLocaleString("fa-IR")}
+          />
+          <Tooltip
+            formatter={(value: number) =>
+              `${value.toLocaleString("fa-IR")} تومان`
+            }
+          />
+          <Legend
+            wrapperStyle={{ paddingTop: 70, fontSize: 10, fontWeight: "bold" }}
+          />
+          <Bar dataKey="total" fill="#00d3bb" name="جمع هزینه بر اساس عنوان" />
         </BarChart>
       </ResponsiveContainer>
     </div>
