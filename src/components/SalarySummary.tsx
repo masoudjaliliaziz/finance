@@ -7,11 +7,6 @@ interface SalarySummaryProps {
 }
 
 const SalarySummary = ({ year, month }: SalarySummaryProps) => {
-  const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-  const nextMonth = month === 12 ? 1 : month + 1;
-  const nextYear = month === 12 ? year + 1 : year;
-  const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
-
   const {
     data: salary,
     isLoading: loadingSalary,
@@ -19,11 +14,7 @@ const SalarySummary = ({ year, month }: SalarySummaryProps) => {
   } = useQuery<number, Error>({
     queryKey: ["salary", year, month],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("salaries")
-        .select("amount")
-        .gte("month", startDate)
-        .lt("month", endDate);
+      const { data, error } = await supabase.from("salaries").select("amount");
 
       if (error) throw error;
       return data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
@@ -39,9 +30,7 @@ const SalarySummary = ({ year, month }: SalarySummaryProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("expenses")
-        .select("amount, date")
-        .gte("date", startDate)
-        .lt("date", endDate);
+        .select("amount, date");
 
       if (error) throw error;
       return data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;

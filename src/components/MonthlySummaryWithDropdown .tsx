@@ -21,17 +21,9 @@ const MonthlySummaryWithDropdown = () => {
 
   useEffect(() => {
     const fetchSummary = async () => {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      const start = new Date(year, month - 1, 1).toISOString().slice(0, 10);
-      const end = new Date(year, month, 0).toISOString().slice(0, 10);
-
       const { data, error } = await supabase
         .from("expenses")
-        .select("title, amount")
-        .gte("date", start)
-        .lte("date", end);
+        .select("title, amount");
 
       if (error) {
         console.error("خطا در دریافت داده‌ها", error);

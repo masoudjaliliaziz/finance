@@ -15,17 +15,7 @@ const DailyBoxes = () => {
 
   useEffect(() => {
     const fetchDates = async () => {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      const start = new Date(year, month - 1, 1).toISOString().slice(0, 10);
-      const end = new Date(year, month, 0).toISOString().slice(0, 10);
-
-      const { data, error } = await supabase
-        .from("expenses")
-        .select("date")
-        .gte("date", start)
-        .lte("date", end);
+      const { data, error } = await supabase.from("expenses").select("date");
 
       if (!error && data) {
         const uniqueDates = Array.from(

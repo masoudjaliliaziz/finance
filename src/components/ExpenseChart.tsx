@@ -16,12 +16,6 @@ interface ChartItem {
   total: number;
 }
 
-function getMonthRange(year: number, month: number) {
-  const start = new Date(year, month - 1, 1).toISOString().slice(0, 10);
-  const end = new Date(year, month, 0).toISOString().slice(0, 10);
-  return { start, end };
-}
-
 // بارگذاری تنظیمات فارسی و اعداد فارسی
 moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
@@ -32,17 +26,10 @@ const ExpenseChart = () => {
   useEffect(() => {
     const fetchChartData = async () => {
       setLoading(true);
-      const today = new Date();
-      const { start, end } = getMonthRange(
-        today.getFullYear(),
-        today.getMonth() + 1
-      );
 
       const { data, error } = await supabase
         .from("expenses")
-        .select("amount, date")
-        .gte("date", start)
-        .lte("date", end);
+        .select("amount, date");
 
       if (error) {
         console.error("خطا در دریافت داده‌های نمودار:", error.message);
