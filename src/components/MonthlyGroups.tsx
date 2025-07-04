@@ -16,7 +16,6 @@ const MonthlyGroups = () => {
   const [dataByMonth, setDataByMonth] = useState<
     Record<string, Record<string, Expense[]>>
   >({});
-
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [newExpense, setNewExpense] = useState({
     title: "",
@@ -110,13 +109,19 @@ const MonthlyGroups = () => {
   };
 
   return (
-    <div className="space-y-6  rounded bg-base-300 text-base-content">
-      {Object.entries(dataByMonth).map(([month, days]) => {
-        return (
-          <div key={month} className="  rounded-xl shadow bg-base-100">
-            <div className="mt-4 space-y-3">
+    <div className="space-y-6 rounded bg-base-300 text-base-content p-4">
+      {Object.entries(dataByMonth)
+        .sort(
+          ([a], [b]) => moment(b, "YYYY-MM").diff(moment(a, "YYYY-MM")) // مرتب‌سازی ماه‌ها نزولی
+        )
+        .map(([month, days]) => (
+          <div key={month} className="rounded-xl shadow bg-base-100 p-4">
+            <div className="space-y-3">
               {Object.entries(days)
-                .sort(([a], [b]) => b.localeCompare(a))
+                .sort(
+                  ([a], [b]) =>
+                    moment(b, "YYYY-MM-DD").diff(moment(a, "YYYY-MM-DD")) // مرتب‌سازی روزها نزولی
+                )
                 .map(([day, expenses]) => {
                   const persianDay = moment(day, "YYYY-MM-DD").format(
                     "dddd jD jMMMM jYYYY"
@@ -135,10 +140,10 @@ const MonthlyGroups = () => {
                         onClick={() =>
                           setExpandedDay(expandedDay === day ? null : day)
                         }
-                        className="font-bold text-sm flex-row-reverse w-full flex justify-between items-center"
+                        className="font-bold text-sm flex justify-between items-center w-full"
                       >
                         <span>{persianDay}</span>
-                        <div className="flex gap-1 items-center flex-row-reverse">
+                        <div className="flex gap-1 items-center">
                           <span className="text-sm font-bold text-accent">
                             {totalAmount.toLocaleString()}
                           </span>
@@ -152,21 +157,21 @@ const MonthlyGroups = () => {
                             {expenses.map((item) => (
                               <li
                                 key={item.id}
-                                className="flex justify-between text-gray-700 items-center gap-2"
+                                className="flex justify-between items-center gap-2 text-gray-700"
                               >
                                 <span>{item.title}</span>
                                 <span>
                                   {item.amount.toLocaleString()} تومان
                                 </span>
-                                <div className="flex items-center justify-center gap-1">
+                                <div className="flex items-center gap-1">
                                   <button
-                                    className="text-xs text-accent font-semibold cursor-pointer hover:text-accent-content"
+                                    className="text-xs text-accent font-semibold hover:text-accent-content"
                                     onClick={() => handleEdit(item)}
                                   >
                                     ویرایش
                                   </button>
                                   <button
-                                    className="text-xs text-error font-semibold cursor-pointer hover:text-error-content"
+                                    className="text-xs text-error font-semibold hover:text-error-content"
                                     onClick={() => handleDelete(item.id)}
                                   >
                                     حذف
@@ -175,11 +180,13 @@ const MonthlyGroups = () => {
                               </li>
                             ))}
                           </ul>
+
+                          {/* فرم افزودن خرج */}
                           <div className="mt-4 space-y-2">
                             <input
                               type="text"
                               placeholder="عنوان"
-                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
+                              className="input input-bordered w-full"
                               value={newExpense.title}
                               onChange={(e) =>
                                 setNewExpense({
@@ -191,7 +198,7 @@ const MonthlyGroups = () => {
                             <input
                               type="number"
                               placeholder="مبلغ"
-                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
+                              className="input input-bordered w-full"
                               value={newExpense.amount}
                               onChange={(e) =>
                                 setNewExpense({
@@ -203,7 +210,7 @@ const MonthlyGroups = () => {
                             <input
                               type="text"
                               placeholder="توضیحات (اختیاری)"
-                              className="px-4 py-1 rounded w-full sm:w-auto input-accent bg-base-100 border-2 border-accent focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent font-bold  text-sm "
+                              className="input input-bordered w-full"
                               value={newExpense.description}
                               onChange={(e) =>
                                 setNewExpense({
@@ -217,7 +224,7 @@ const MonthlyGroups = () => {
                                 setTargetDate(day);
                                 handleAddExpense();
                               }}
-                              className="bg-accent text-white px-4 py-1 rounded"
+                              className="btn btn-accent w-full"
                               disabled={isAdding}
                             >
                               {isAdding ? "در حال افزودن..." : "افزودن"}
@@ -230,8 +237,7 @@ const MonthlyGroups = () => {
                 })}
             </div>
           </div>
-        );
-      })}
+        ))}
     </div>
   );
 };

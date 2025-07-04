@@ -35,9 +35,9 @@ const MonthlyTitleChart = () => {
         grouped[title] = (grouped[title] || 0) + Number(amount);
       });
 
-      const result: TitleChartItem[] = Object.entries(grouped).map(
-        ([title, total]) => ({ title, total })
-      );
+      const result: TitleChartItem[] = Object.entries(grouped)
+        .map(([title, total]) => ({ title, total }))
+        .sort((a, b) => b.total - a.total); // ← سورت نزولی بر اساس total
 
       setChartData(result);
     };

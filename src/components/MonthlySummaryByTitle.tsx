@@ -36,10 +36,9 @@ const MonthlySummaryByTitle = () => {
         detailMap[item.title].push(item);
       });
 
-      const result = Object.entries(grouped).map(([title, total]) => ({
-        title,
-        total,
-      }));
+      const result = Object.entries(grouped)
+        .map(([title, total]) => ({ title, total }))
+        .sort((a, b) => b.total - a.total); // ← سورت بر اساس بیشترین
 
       setSummary(result);
       setDetails(detailMap);
@@ -47,6 +46,7 @@ const MonthlySummaryByTitle = () => {
 
     fetchSummary();
   }, []);
+
   moment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
   // تابع کمکی برای تبدیل تاریخ میلادی به شمسی همراه با روز هفته
   const formatJalaliDate = (gregorianDate: string) => {
